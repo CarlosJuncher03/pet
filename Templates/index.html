@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Guarda Compartilhada de Pets</title>
+    <link rel="stylesheet" href="static/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <img src="static/img/index.png" alt="Logo de Pet" class="logo">
+                <h1>Login</h1>
+            </div>
+            <form action="/login" method="POST">
+                <label for="email"><i class="fas fa-envelope"></i> Email:</label>
+                <input type="email" id="email" name="email" required>
+                
+                <label for="password"><i class="fas fa-lock"></i> Senha:</label>
+                <input type="password" id="password" name="password" required>
+
+                <button type="submit"><i class="fas fa-sign-in-alt"></i> Entrar</button>
+            </form>
+            <p>Não tem uma conta? <a href="/register">Cadastre-se</a></p>
+            <p><a href="#" onclick="document.getElementById('forgotPasswordModal').style.display='block'">Esqueceu a senha?</a></p>
+        </div>
+    </div>
+
+    <!-- Modal de recuperação de senha -->
+    <div id="forgotPasswordModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('forgotPasswordModal').style.display='none'">&times;</span>
+            <h2>Recuperar Senha</h2>
+            <form id="forgot-password-form" action="/forgot_password" method="POST">
+                <label for="forgot-email"><i class="fas fa-envelope"></i> Email:</label>
+                <input type="email" id="forgot-email" name="email" required>
+                <button type="submit"><i class="fas fa-paper-plane"></i> Enviar</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

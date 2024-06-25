@@ -1,0 +1,236 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #fff8dc; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+}
+
+.login-box {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.login-header {
+    margin-bottom: 20px;
+}
+
+.logo {
+    width: 100px;
+    height: auto; 
+    max-width: 100%; 
+    margin-bottom: 10px;
+}
+
+h1 {
+    color: #ffcc00; 
+    margin-bottom: 20px;
+}
+
+/* Adicione este CSS ao seu arquivo index.css */
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+label {
+    display: block;
+    color: #666;
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #fff8dc; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+}
+
+.login-box {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.login-header {
+    margin-bottom: 20px;
+}
+
+.logo {
+    width: 100px;
+    height: auto; 
+    max-width: 100%; 
+    margin-bottom: 10px;
+}
+
+h1 {
+    color: #ffcc00; 
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    color: #666;
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+input:focus{
+    border-color: #ffcc00;
+    outline: none;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #ffcc00; 
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #e6b800; 
+}
+
+p {
+    margin-top: 20px;
+}
+
+a {
+    color: #ffcc00; 
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+    .login-box {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    input,
+    button {
+        font-size: 14px;
+    }
+}
+
+
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #ffcc00; 
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #e6b800; 
+}
+
+p {
+    margin-top: 20px;
+}
+
+a {
+    color: #ffcc00; 
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+

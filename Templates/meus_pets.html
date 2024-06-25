@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Pets - Guarda Compartilhada de Pets</title>
+    <link rel="stylesheet" href="static/meus_pets.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.4/dist/sweetalert2.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Guarda Compartilhada de Pets</h1>
+            <nav>
+                <ul>
+                    <li><a href="/home"><i class="fas fa-home"></i> Página Principal</a></li>
+                    <li><a href="/meus_pets"><i class="fas fa-paw"></i> Meus Pets</a></li>
+                    <li><a href="/guarda_compartilhada"><i class="fas fa-shield-alt"></i> Guarda Compartilhada</a></li>
+                    <li><a href="/perfil"><i class="fas fa-user"></i> Perfil</a></li>
+                    <li><a href="/compartilhamentos"><i class="fas fa-share-alt"></i> Compartilhamentos</a></li>
+                    <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <main>
+        <div class="container">
+            <section class="pet-list">
+                <h2>Meus Pets</h2>
+                
+                <button class="add-pet-btn" onclick="document.getElementById('addPetModal').style.display='block'"><i class="fas fa-plus-circle"></i> Adicionar Novo Pet</button>
+                <div class="filter-container">
+                    <form method="GET" action="{{ url_for('meus_pets') }}">
+                        <input type="text" name="filter" placeholder="Filtrar por nome" value="{{ filter }}">
+                        <button type="submit"><i class="fas fa-search"></i></button>
+                    </form>
+                </div>
+                
+                <div id="addPetModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="document.getElementById('addPetModal').style.display='none'">&times;</span>
+                        <form id="add-pet-form" action="/add_pet" method="POST" enctype="multipart/form-data" onsubmit="return confirmAddPet(event)">
+                            <label for="name">Nome:</label>
+                            <input type="text" id="name" name="name" required>
+                            <label for="species">Espécie:</label>
+                            <input type="text" id="species" name="species" required>
+                            <label for="breed">Raça:</label>
+                            <input type="text" id="breed" name="breed">
+                            <label for="age">Idade:</label>
+                            <input type="number" id="age" name="age">
+                            <label for="notes">Observação:</label>
+                            <textarea id="notes" name="notes"></textarea>
+                            <label for="photo">Foto do Pet:</label>
+                            <input type="file" id="photo" name="photo" accept="image/*" required>
+                            <button type="submit">Adicionar Pet</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="editPetModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="document.getElementById('editPetModal').style.display='none'">&times;</span>
+                        <form id="edit-pet-form" action="/edit_pet" method="POST" enctype="multipart/form-data" onsubmit="return confirmEditPet(event)">
+                            <input type="hidden" id="edit-pet-id" name="pet_id">
+                            <label for="edit-name">Nome:</label>
+                            <input type="text" id="edit-name" name="name" required>
+                            <label for="edit-species">Espécie:</label>
+                            <input type="text" id="edit-species" name="species" required>
+                            <label for="edit-breed">Raça:</label>
+                            <input type="text" id="edit-breed" name="breed">
+                            <label for="edit-age">Idade:</label>
+                            <input type="number" id="edit-age" name="age">
+                            <label for="edit-notes">Observação:</label>
+                            <textarea id="edit-notes" name="notes"></textarea>
+                            <label for="edit-photo">Foto do Pet:</label>
+                            <input type="file" id="edit-photo" name="photo" accept="image/*">
+                            <img id="edit-photo-preview" src="#" alt="Foto do Pet" style="visibility: hidden; width: 100px; height: auto;">
+                            <button type="submit">Salvar Alterações</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="sharePetModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="document.getElementById('sharePetModal').style.display='none'">&times;</span>
+                        <form id="share-pet-form" action="/share_pet" method="POST" onsubmit="return confirmSharePet(event)">
+                            <input type="hidden" id="share-pet-id" name="pet_id">
+                            <label for="share-email">Email do usuário para compartilhar:</label>
+                            <input type="email" id="share-email" name="email" required oninput="autocompleteEmail()">
+                            <div id="autocomplete-list" class="autocomplete-items"></div>
+                            <button type="submit">Compartilhar Pet</button>
+                        </form>
+                    </div>
+                </div>
+
+                {% for pet in pets %}
+                <div class="pet">
+                    <img src="static/img/{{ pet['photo'] }}" alt="Foto do Pet">
+                    <div class="pet-info">
+                        <h3>{{ pet['name'] }}</h3>
+                        <p>{{ pet['species'] }}</p>
+                        <div class="pet-actions">
+                            <button class="edit-pet-btn" onclick="openEditModal({{ pet['id'] }}, '{{ pet['name'] }}', '{{ pet['species'] }}', '{{ pet['breed'] }}', {{ pet['age'] }}, '{{ pet['notes'] }}', '{{ pet['photo'] }}')"><i class="fas fa-edit"></i></button>
+                            <button class="share-pet-btn" onclick="openShareModal({{ pet['id'] }})"><i class="fas fa-share-alt"></i></button>
+                            <button class="view-shares-btn" onclick="viewShares({{ pet['id'] }})"><i class="fas fa-users"></i></button>
+                            <form action="/delete_pet/{{ pet['id'] }}" method="POST" style="display:inline;" onsubmit="return confirmDeletePet(event)">
+                                <button type="submit" class="delete-pet-btn"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+                {% for pet in shared_pets %}
+                <div class="pet">
+                    <img src="static/img/{{ pet['photo'] }}" alt="Foto do Pet">
+                    <div class="pet-info">
+                        <h3>{{ pet['name'] }}</h3>
+                        <p>{{ pet['species'] }}</p>
+                        <div class="pet-actions">
+                            <form action="/deixar_de_cuidar/{{ pet['id'] }}" method="POST" style="display:inline;" onsubmit="return confirmDeixarDeCuidar(event)">
+                                <button type="submit" class="deixar-de-cuidar-btn"><i class="fas fa-heart-broken"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                
+
+                <div class="pagination-container">
+                    <ul class="pagination">
+                        {% if page > 1 %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('meus_pets', page=page-1, filter=filter) }}">&laquo;</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+                        {% endif %}
+                        
+                        <li class="page-item active"><span class="page-link">{{ page }}</span></li>
+                
+                        {% if page < total_pages %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('meus_pets', page=page+1, filter=filter) }}">&raquo;</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                
+            </section>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Guarda Compartilhada de Pets. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.4/dist/sweetalert2.all.min.js"></script>
+    <script>
+        var addModal = document.getElementById('addPetModal');
+        var editModal = document.getElementById('editPetModal');
+        var shareModal = document.getElementById('sharePetModal');
+        
+        window.onclick = function(event) {
+            if (event.target == addModal) {
+                addModal.style.display = "none";
+            }
+            if (event.target == editModal) {
+                editModal.style.display = "none";
+            }
+            if (event.target == shareModal) {
+                shareModal.style.display = "none";
+            }
+        }
+
+        function confirmAddPet(event) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Adicionar Pet',
+                text: 'Você realmente deseja adicionar este pet?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#fbc02d',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sim, adicionar!',
+                cancelButtonText: 'Não, cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    event.target.submit();
+                }
+            });
+            return false;
+        }
+
+        function confirmEditPet(event) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Salvar Alterações',
+                text: 'Você realmente deseja salvar as alterações deste pet?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#fbc02d',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sim, salvar!',
+                cancelButtonText: 'Não, cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    event.target.submit();
+                }
+            });
+            return false;
+        }
+
+        function confirmDeletePet(event) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Excluir Pet',
+                text: 'Você realmente deseja excluir este pet?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#f44336',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sim, excluir!',
+                cancelButtonText: 'Não, cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    event.target.submit();
+                }
+            });
+            return false;
+        }
+
+        function confirmSharePet(event) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Compartilhar Pet',
+                text: 'Você realmente deseja compartilhar este pet?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#fbc02d',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sim, compartilhar!',
+                cancelButtonText: 'Não, cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    event.target.submit();
+                }
+            });
+            return false;
+        }
+
+        function confirmDeixarDeCuidar(event) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Deixar de Cuidar',
+                text: 'Você realmente deseja deixar de cuidar deste pet?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#f44336',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sim, deixar de cuidar!',
+                cancelButtonText: 'Não, cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    event.target.submit();
+                }
+            });
+            return false;
+        }
+
+        function openEditModal(id, name, species, breed, age, notes, photo) {
+            document.getElementById('edit-pet-id').value = id;
+            document.getElementById('edit-name').value = name;
+            document.getElementById('edit-species').value = species;
+            document.getElementById('edit-breed').value = breed;
+            document.getElementById('edit-age').value = age;
+            document.getElementById('edit-notes').value = notes;
+
+            // Atualizando a visualização da imagem, se houver
+            var photoPreview = document.getElementById('edit-photo-preview');
+            if (photo) {
+                photoPreview.src = 'static/img/' + photo;
+                photoPreview.style.visibility = 'visible';
+            } else {
+                photoPreview.style.visibility = 'hidden';
+            }
+
+            editModal.style.display = 'block';
+        }
+
+        function openShareModal(petId) {
+            document.getElementById('share-pet-id').value = petId;
+            shareModal.style.display = 'block';
+        }
+
+        function viewShares(petId) {
+            window.location.href = `/view_shares/${petId}`;
+        }
+
+        function autocompleteEmail() {
+            const input = document.getElementById('share-email');
+            const list = document.getElementById('autocomplete-list');
+            const query = input.value;
+
+            if (!query) {
+                list.innerHTML = '';
+                return false;
+            }
+
+            fetch(`/autocomplete_email?q=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    list.innerHTML = '';
+                    data.forEach(email => {
+                        const item = document.createElement('div');
+                        item.innerText = email;
+                        item.addEventListener('click', () => {
+                            input.value = email;
+                            list.innerHTML = '';
+                        });
+                        list.appendChild(item);
+                    });
+                });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Guarda - Guarda Compartilhada de Pets</title>
+    <link rel="stylesheet" href="static/guarda_compartilhada.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.4/dist/sweetalert2.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Guarda Compartilhada de Pets</h1>
+            <nav>
+                <ul>
+                    <li><a href="/home"><i class="fas fa-home"></i> Página Principal</a></li>
+                    <li><a href="/meus_pets"><i class="fas fa-paw"></i> Meus Pets</a></li>
+                    <li><a href="/guarda_compartilhada"><i class="fas fa-shield-alt"></i> Guarda Compartilhada</a></li>
+                    <li><a href="/perfil"><i class="fas fa-user"></i> Perfil</a></li>
+                    <li><a href="/compartilhamentos"><i class="fas fa-share-alt"></i> Compartilhamentos</a></li>
+                    <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <main>
+        <div class="container">
+            <section class="activity-list">
+                <h2>Controle de Guarda Compartilhada</h2>
+                <button class="add-pet-btn" onclick="openAddActivityModal()"><i class="fas fa-plus-circle"></i> Adicionar Nova Atividade</button>
+                <ul>
+                    <!-- Lista de atividades -->
+                    {% for activity in activities %}
+                    <li class="activity {% if activity.status == 'finalizado' %}finalizado{% endif %}">
+                        <div class="activity-info">
+                            <h3>Guarda de {{ activity.pet_name }}</h3>
+                            <p><strong>Cuidador:</strong> {{ activity.caregiver_name }}</p>
+                            <p><strong>Data de Início:</strong> {{ activity.start_date }}</p>
+                            <p><strong>Data de Término:</strong> {{ activity.end_date }}</p>
+                            <p><strong>Observação:</strong> {{ activity.notes }}</p>
+                            <p><strong>Status:</strong> {{ activity.status }}</p>
+                            <div class="action-buttons">
+                                {% if activity.status == 'aberto' %}
+                                <button class="edit-btn" onclick="openEditModal({{ activity.id }}, '{{ activity.pet_id }}', '{{ activity.caregiver_id }}', '{{ activity.start_date }}', '{{ activity.end_date }}', '{{ activity.notes }}')"><i class="fas fa-edit"></i> Editar</button>
+                                <button class="delete-btn" onclick="confirmDeleteActivity({{ activity.id }})"><i class="fas fa-trash-alt"></i> Excluir</button>
+                                <button class="finalize-btn" onclick="confirmFinalizeActivity({{ activity.id }})"><i class="fas fa-check"></i> Finalizar</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal para adicionar atividade -->
+    <div id="addActivityModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddActivityModal()">&times;</span>
+            <form id="add-activity-form" action="/add_activity" method="POST">
+                <label for="pet_id">Pet:</label>
+                <select id="pet_id" name="pet_id" required>
+                    <option value="" disabled selected>Selecione um pet</option>
+                    {% for pet in pets %}
+                    <option value="{{ pet.id }}">{{ pet.name }}</option>
+                    {% endfor %}
+                </select>
+                <label for="caregiver_id">Cuidador:</label>
+                <select id="caregiver_id" name="caregiver_id" required>
+                    <!-- Cuidadores serão carregados dinamicamente -->
+                </select>
+                <label for="start_date">Data de Início:</label>
+                <input type="date" id="start_date" name="start_date" required>
+                <label for="end_date">Data de Término:</label>
+                <input type="date" id="end_date" name="end_date" required>
+                <label for="notes">Observação:</label>
+                <textarea id="notes" name="notes"></textarea>
+                <button type="submit">Adicionar Atividade</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para editar atividade -->
+    <div id="editActivityModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditActivityModal()">&times;</span>
+            <form id="edit-activity-form" action="/edit_activity" method="POST">
+                <input type="hidden" id="edit_activity_id" name="activity_id">
+                <label for="edit_pet_id">Pet:</label>
+                <select id="edit_pet_id" name="pet_id" required>
+                    {% for pet in pets %}
+                    <option value="{{ pet.id }}">{{ pet.name }}</option>
+                    {% endfor %}
+                </select>
+                <label for="edit_caregiver_id">Cuidador:</label>
+                <select id="edit_caregiver_id" name="caregiver_id" required>
+                    <!-- Cuidadores serão carregados dinamicamente -->
+                </select>
+                <label for="edit_start_date">Data de Início:</label>
+                <input type="date" id="edit_start_date" name="start_date" required>
+                <label for="edit_end_date">Data de Término:</label>
+                <input type="date" id="edit_end_date" name="end_date" required>
+                <label for="edit_notes">Observação:</label>
+                <textarea id="edit_notes" name="notes"></textarea>
+                <button type="submit">Salvar Alterações</button>
+            </form>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Guarda Compartilhada de Pets. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.4/dist/sweetalert2.all.min.js"></script>
+    <script>
+        function openAddActivityModal() {
+            document.getElementById('addActivityModal').style.display = 'block';
+            document.getElementById('pet_id').selectedIndex = 0; // Seleciona a opção "Selecione um pet"
+            document.getElementById('caregiver_id').innerHTML = ''; // Limpa cuidadores
+        }
+
+        function closeAddActivityModal() {
+            document.getElementById('addActivityModal').style.display = 'none';
+        }
+
+        function closeEditActivityModal() {
+            document.getElementById('editActivityModal').style.display = 'none';
+        }
+
+        document.getElementById('pet_id').addEventListener('change', function() {
+            var petId = this.value;
+            fetch(`/get_caregivers/${petId}`)
+                .then(response => response.json())
+                .then(data => {
+                    var caregiverSelect = document.getElementById('caregiver_id');
+                    caregiverSelect.innerHTML = '';
+                    data.caregivers.forEach(function(caregiver) {
+                        var option = document.createElement('option');
+                        option.value = caregiver.id;
+                        option.textContent = caregiver.name;
+                        caregiverSelect.appendChild(option);
+                    });
+                });
+        });
+
+        function openEditModal(activityId, petId, caregiverId, startDate, endDate, notes) {
+            document.getElementById('edit_activity_id').value = activityId;
+            document.getElementById('edit_pet_id').value = petId;
+            document.getElementById('edit_caregiver_id').value = caregiverId;
+            document.getElementById('edit_start_date').value = startDate;
+            document.getElementById('edit_end_date').value = endDate;
+            document.getElementById('edit_notes').value = notes;
+
+            fetch(`/get_caregivers/${petId}`)
+                .then(response => response.json())
+                .then(data => {
+                    var caregiverSelect = document.getElementById('edit_caregiver_id');
+                    caregiverSelect.innerHTML = '';
+                    data.caregivers.forEach(function(caregiver) {
+                        var option = document.createElement('option');
+                        option.value = caregiver.id;
+                        option.textContent = caregiver.name;
+                        if (caregiver.id == caregiverId) {
+                            option.selected = true;
+                        }
+                        caregiverSelect.appendChild(option);
+                    });
+                });
+
+            document.getElementById('editActivityModal').style.display = 'block';
+        }
+
+        function confirmDeleteActivity(activityId) {
+            Swal.fire({
+                title: 'Tem certeza?',
+                text: "Você não poderá reverter isso!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sim, excluir!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/delete_activity/${activityId}`, {
+                        method: 'POST'
+                    }).then(response => {
+                        if (response.ok) {
+                            Swal.fire(
+                                'Excluído!',
+                                'A atividade foi excluída.',
+                                'success'
+                            ).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire(
+                                'Erro!',
+                                'Erro ao excluir atividade. Tente novamente.',
+                                'error'
+                            );
+                        }
+                    });
+                }
+            });
+        }
+
+        function confirmFinalizeActivity(activityId) {
+            Swal.fire({
+                title: 'Tem certeza?',
+                text: "Você quer finalizar esta atividade?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sim, finalizar!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/finalize_activity/${activityId}`, {
+                        method: 'POST'
+                    }).then(response => {
+                        if (response.ok) {
+                            Swal.fire(
+                                'Finalizado!',
+                                'A atividade foi finalizada.',
+                                'success'
+                            ).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire(
+                                'Erro!',
+                                'Erro ao finalizar atividade. Tente novamente.',
+                                'error'
+                            );
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>

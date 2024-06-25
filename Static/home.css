@@ -1,0 +1,215 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #fff8dc; 
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    flex: 1;
+}
+
+header {
+    background-color: #ffcc00; 
+    padding: 20px 0;
+}
+
+header h1 {
+    color: #000000;
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 24px; 
+}
+
+nav ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    flex-wrap: wrap;
+}
+
+nav ul li {
+    margin: 5px;
+}
+
+nav ul li a {
+    color: #000000;
+    text-decoration: none;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+}
+
+nav ul li a i {
+    margin-right: 5px;
+}
+
+nav ul li a:hover {
+    text-decoration: underline;
+}
+
+main {
+    padding: 20px 0;
+    flex: 1;
+}
+
+.activity-list {
+    text-align: center;
+    margin-bottom: 30px; 
+}
+
+.activity-list h2 {
+    font-size: 24px;
+    color: #ffcc00;
+    margin-bottom: 20px;
+}
+
+.activity-list ul {
+    list-style: none;
+    padding: 0;
+}
+
+.activity-list li {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.activity-info h3 {
+    font-size: 20px;
+    color: #ffcc00;
+    margin-bottom: 10px;
+}
+
+.activity-info p {
+    margin-bottom: 5px;
+}
+
+.pet-list {
+    text-align: center;
+}
+
+.pet-list h2 {
+    font-size: 24px;
+    color: #ffcc00;
+    margin-bottom: 20px;
+}
+
+.pet {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.pet img {
+    width: 100px;
+    height: 100px; 
+    border-radius: 50%;
+    margin-right: 20px;
+}
+
+.pet-info {
+    flex-grow: 1;
+    text-align: left;
+}
+
+.pet-info h3 {
+    font-size: 20px;
+    color: #ffcc00;
+    margin-bottom: 5px;
+}
+
+.pet-info p {
+    color: #666;
+}
+
+.pagination-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.pagination {
+    display: inline-block;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pagination li {
+    display: inline;
+    margin: 0 5px;
+}
+
+.pagination li a, .pagination li span {
+    color: #333;
+    padding: 8px 16px;
+    text-decoration: none;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.pagination li a:hover, .pagination li a:focus, .pagination li span {
+    background-color: #ffcc00;
+    color: #fff;
+    border-color: #ffcc00;
+}
+
+footer {
+    background-color: #ffcc00;
+    padding: 10px 0;
+    text-align: center;
+    color: #000000;
+    width: 100%;
+    position: static; /* Alterado de fixed para static */
+    bottom: 0;
+    margin-top: auto; /* Garante que o footer fique no final da página */
+}
+
+@media (max-width: 768px) {
+    nav ul {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .activity-info, .pet-info {
+        text-align: center;
+    }
+    
+    .pet {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .pet img {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+}
+
+@media (min-width: 601px) {
+    nav ul {
+        flex-direction: row;
+    }
+
+    nav ul li {
+        margin: 0 10px;
+    }
+}

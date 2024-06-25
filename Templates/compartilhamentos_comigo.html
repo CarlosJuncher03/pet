@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compartilhamentos - Guarda Compartilhada de Pets</title>
+    <link rel="stylesheet" href="/static/compartilhamentos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Guarda Compartilhada de Pets</h1>
+            <nav>
+                <ul>
+                    <li><a href="/home"><i class="fas fa-home"></i> Página Principal</a></li>
+                    <li><a href="/meus_pets"><i class="fas fa-paw"></i> Meus Pets</a></li>
+                    <li><a href="/guarda_compartilhada"><i class="fas fa-shield-alt"></i> Guarda Compartilhada</a></li>
+                    <li><a href="/perfil"><i class="fas fa-user"></i> Perfil</a></li>
+                    <li><a href="/compartilhamentos"><i class="fas fa-share-alt"></i> Compartilhamentos</a></li>
+                    <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <main>
+        <div class="container">
+            <h2>Convites de Compartilhamento</h2>
+            <div class="share-list">
+                {% for share in shares %}
+                <div class="share">
+                    <p><strong>Pet:</strong> {{ share['pet_name'] }}</p>
+                    <p><strong>De:</strong> {{ share['owner_email'] }}</p>
+                    <p><strong>Status:</strong> {{ share['status'] }}</p>
+                    {% if share['status'] == 'pending' %}
+                    <form action="/accept_share/{{ share['id'] }}" method="POST" style="display:inline;">
+                        <button type="submit" class="accept-btn">Aceitar</button>
+                    </form>
+                    <form action="/reject_share/{{ share['id'] }}" method="POST" style="display:inline;">
+                        <button type="submit" class="reject-btn">Rejeitar</button>
+                    </form>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Guarda Compartilhada de Pets. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+</body>
+</html>

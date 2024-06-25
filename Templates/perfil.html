@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Perfil - Guarda Compartilhada de Pets</title>
+    <link rel="stylesheet" href="static/perfil.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.4/dist/sweetalert2.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Guarda Compartilhada de Pets</h1>
+            <nav>
+                <ul>
+                    <li><a href="/home"><i class="fas fa-home"></i> Página Principal</a></li>
+                    <li><a href="/meus_pets"><i class="fas fa-paw"></i> Meus Pets</a></li>
+                    <li><a href="/guarda_compartilhada"><i class="fas fa-shield-alt"></i> Guarda Compartilhada</a></li>
+                    <li><a href="/perfil"><i class="fas fa-user"></i> Perfil</a></li>
+                    <li><a href="/compartilhamentos"><i class="fas fa-share-alt"></i> Compartilhamentos</a></li>
+                    <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <main>
+        <div class="container">
+            <section class="profile-section">
+                <h2>Meu Perfil</h2>
+                <div class="profile-info">
+                    <div class="profile-avatar">
+                        <img id="avatarPreview" src="static/img/{{ user.photo }}" alt="Avatar">
+                        <form id="avatar-form" action="/update_avatar_immediate" method="POST" enctype="multipart/form-data">
+                            <label for="photo"><i class="fas fa-pencil-alt"></i> Editar Avatar
+                                <input type="file" id="photo" name="photo" accept="image/*" onchange="previewAndUploadAvatar()">
+                            </label>
+                        </form>
+                    </div>
+                    <form id="profile-form" action="/perfil" method="POST" onsubmit="return confirmProfileUpdate(event)">
+                        <div class="form-group">
+                            <label for="username">Nome:</label>
+                            <input type="text" id="username" name="username" value="{{ user.username }}" onchange="showSaveButton()">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" name="email" value="{{ user.email }}" onchange="showSaveButton()">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Senha:</label>
+                            <div style="position: relative;">
+                                <input type="password" id="password" name="password" placeholder="********" onchange="showSaveButton()">
+                                <i class="fas fa-eye" id="togglePassword" style="position: absolute; right: 10px; top: 10px; cursor: pointer;"></i>
+                            </div>
+                        </div>
+                        <button type="submit">Salvar Alterações</button>
+                        <button type="button" class="cancel" onclick="window.location.href='/perfil'">Cancelar</button>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Guarda Compartilhada de Pets. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.4/dist/sweetalert2.all.min.js"></script>
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function (e) {
+            const password = document.getElementById('password');
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            this.classList.toggle('fa-eye-slash');
+        });
+
+        function showSaveButton() {
+            document.querySelector('button.cancel').style.display = 'block';
+        }
+
+        function previewAndUploadAvatar() {
+            const file = document.getElementById('photo').files[0];
+            const reader = new FileReader();
+            
+            reader.onloadend = function() {
+                document.getElementById('avatarPreview').src = reader.result;
+                const formData = new FormData();
+                formData.append('photo', file);
+                
+                fetch('/update_avatar_immediate', {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    if (response.ok) {
+                        return response.text();
+                    } else {
+                        throw new Error('Erro ao atualizar o avatar');
+                    }
+                }).then(data => {
+                    console.log('Avatar atualizado com sucesso');
+                }).catch(error => {
+                    console.error(error);
+                });
+            };
+            
+            if (file) {
+                reader.readAsDataURL(file);
+            } else {
+                document.getElementById('avatarPreview').src = "static/img/{{ user.photo }}";
+            }
+        }
+
+        function confirmProfileUpdate(event) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Salvar Alterações',
+                text: 'Você realmente deseja atualizar seu perfil?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#ffcc00',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sim, atualizar!',
+                cancelButtonText: 'Não, cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('profile-form').submit();
+                }
+            });
+            return false;
+        }
+    </script>
+</body>
+</html>
